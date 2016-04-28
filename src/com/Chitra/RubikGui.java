@@ -9,6 +9,9 @@ import java.sql.SQLException;
 
 /**
  * Created by chitrakakkar on 4/25/16.
+ * This class designs the GUI with Info from TableModel
+ * Adds listener for all buttons on the GUI
+ * Calls user defined methods like insert row / delete row from TableModel, finally resultSet
  */
 public class RubikGui extends JFrame implements WindowListener
 {

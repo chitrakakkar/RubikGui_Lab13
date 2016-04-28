@@ -10,42 +10,53 @@ import java.sql.*;
 
 public class Main
 {
-    // establish the connection with
+    // establish the connection with thr Database
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
     private static String DB_CONNECTION_URL = "jdbc:mysql://localhost:3306/";
     private static final String DB_NAME = "newrubik";
     private static final String USER = "root";
     private static final String PASS = "password";
 
-
+// a statement acts as an interface that represent a SQL statement.
     static Statement statement = null;
     static Connection conn = null;
     static ResultSet rs = null;
+    //when the PreparedStatement is executed,
+    // the DBMS can just run the PreparedStatement SQL statement
+    // without having to compile it first.
     public static PreparedStatement PrepStatement = null;
 
-    public final static String rubik_Table_Name = "Rubik_Solver2";
+
+    // some constants to represent the column
+    public final static String rubik_Table_Name = "Rubik_SolverR";
     public final static String Solver_Name = "Solver_Name";
     public final static String Time_Taken = "Time_Taken";
+    // need a primary key to update the info in a table using a result set
     public final static String PK_COLUMN = "id";
 
+    // a tableModel object declared.
     private static RubikModel rubikModel;
 
     public static void main(String[] args)
     {
+        // checks if table is created
 
         if(!setup())
         {
 
             System.exit(-1);
         }
+        // checks if result sets get all the data from the table
+        // And forward it to the table model
         if(!loadAllData())
         {
             System.exit(-1);
         }
-
+        // construct and displays the GUI
         RubikGui rubikGui = new RubikGui(rubikModel);
 
     }
+    // Sets up The connection and creates the table into the database.
     public static boolean setup()
     {
         try
@@ -58,13 +69,17 @@ public class Main
         }
         try {
             conn = DriverManager.getConnection(DB_CONNECTION_URL + DB_NAME, USER, PASS);
-            //statement = conn.createStatement();
+            //The result can be scrolled;
+            // its cursor can move both forward and backward relative to the current position,
+            // and it can move to an absolute position.
+            // The result set is insensitive to changes made to the underlying data source while it is open.
+            // It contains the rows that satisfy the query at either the time the query is executed or
+            // as the rows are retrieved.
              statement= conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
             //String createTableCUBE = "CREATE TABLE  if not exists testTable (Cube_Solver varchar(30), Time_Taken double)";
 //            if (!rubikTableExists()) {
 //                String createTableRubik = "CREATE TABLE " + rubik_Table_Name + " (" + PK_COLUMN + " int NOT NULL AUTO_INCREMENT, " + Solver_Name + " varchar(100), " + Time_Taken + " Double,Primary Key(" + PK_COLUMN + "))";
 //
-
                 String createTableRubik = "CREATE TABLE  if not exists " + rubik_Table_Name + "(" + PK_COLUMN + " int NOT NULL AUTO_INCREMENT, " + Solver_Name + " varchar(150)," + Time_Taken + " Double, PRIMARY KEY (" + PK_COLUMN + "))";
                 statement.executeUpdate(createTableRubik);
                 String addDataSQL = "INSERT INTO " + rubik_Table_Name + "(" + Solver_Name + " , " + Time_Taken + ")" + " VALUES ('CubeStormer II robot', 5.270)";
@@ -84,36 +99,35 @@ public class Main
 
             }
 
-
-
         catch (SQLException se)
         {
-
             se.printStackTrace();
             System.out.println("Here");
             return false;
         }
 
     }
-    private static boolean rubikTableExists() throws SQLException {
-        String checkTablePresentQuery = " SHOW TABLES LIKE '" + rubik_Table_Name + " '";
-        ResultSet tablesRS = statement.executeQuery(checkTablePresentQuery);
-        if (tablesRS.next())
-        {    //If ResultSet has a next row, it has at least one row... that must be our table
-            return true;
-        }
-        return false;
-    }
+    // not using in this class
+//    private static boolean rubikTableExists() throws SQLException {
+//        String checkTablePresentQuery = " SHOW TABLES LIKE '" + rubik_Table_Name + " '";
+//        ResultSet tablesRS = statement.executeQuery(checkTablePresentQuery);
+//        if (tablesRS.next())
+//        {    //If ResultSet has a next row, it has at least one row... that must be our table
+//            return true;
+//        }
+//        return false;
+//    }
 
-
+    // runs a query and assign the result to the result set
     public static boolean loadAllData()
     {
-        try {
+        try
+        {
             String getAllData = "SELECT * FROM " + rubik_Table_Name;
-            rs = PrepStatement.executeQuery(getAllData);
+            rs = statement.executeQuery(getAllData);
             if (rubikModel == null)
             {
-                rubikModel = new RubikModel(rs);
+                rubikModel = new RubikModel(rs); // new tableModel created
             }
             else
             {
@@ -131,6 +145,7 @@ public class Main
         }
     }
 
+    // Shuts down everything:-> Result set-> Statement-> Connection
 
     public static void shutdown()
     {

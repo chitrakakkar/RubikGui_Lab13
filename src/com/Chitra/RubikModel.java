@@ -7,6 +7,8 @@ import java.sql.SQLException;
 
 /**
  * Created by chitrakakkar on 4/26/16.
+ * This class basically creates the table after getting the number of rows and column from ResultSet
+ * And populate the data into the table
  */
 public class RubikModel extends AbstractTableModel
 {
@@ -15,12 +17,15 @@ public class RubikModel extends AbstractTableModel
     int numberOfRows;
     int numberOfColumns;
 
-
-    public RubikModel(ResultSet rs) {
+        // constructor gets the result set
+        // and rowCount and columnCount
+    public RubikModel(ResultSet rs)
+    {
         this.resultSet = rs;
         setup();
 
     }
+    //updates the result set
 
     public void updateResultSet(ResultSet newRS) {
         resultSet = newRS;
@@ -28,7 +33,8 @@ public class RubikModel extends AbstractTableModel
 
     }
 
-    private void setup() {
+    private void setup()
+    {
 
         countRows();
 
@@ -82,7 +88,7 @@ public class RubikModel extends AbstractTableModel
             return se.toString();
         }
     }
-
+    // deletes the row selected in GUI using predefined method called deleteRow
     public  boolean deleteRow(int row)
     {
         try
@@ -98,19 +104,17 @@ public class RubikModel extends AbstractTableModel
         }
     }
 
-
-
-
+    // Updates the new value into a row using result set whenever
+    // user edits an editable cell which is Time _Taken in this case
     public void setValueAt(Object newValue, int row, int col) {
-
-        //Make sure newValue is an integer AND that it is in the range of valid ratings
-
+        //Make sure newValue is a positive number
         Double newTime;
 
         try {
             newTime = Double.parseDouble(newValue.toString());
 
-            if (newTime < 0.0) {
+            if (newTime < 0.0)
+            {
                 throw new NumberFormatException("Time Taken  must be a postive double number");
             }
         } catch (NumberFormatException ne) {
@@ -126,6 +130,7 @@ public class RubikModel extends AbstractTableModel
         {
             resultSet.absolute(row + 1);
             resultSet.updateDouble(Main.Time_Taken, newTime);
+            System.out.println("Updated the time");
             resultSet.updateRow();
             fireTableDataChanged();
         }
@@ -135,15 +140,17 @@ public class RubikModel extends AbstractTableModel
         }
     }
 
+    // allows to edit the cell(Time taken in this case)
     public boolean isCellEditable(int row, int col)
     {
+        // if(col == resultSet.findColumn(Main.Time_Taken)
         if (col == 2)
         {
             return true;
         }
         return false;
     }
-
+    // Inserts the value into a row using result set
     public  boolean insertRow(String st, Double tt)
     {
         try {
@@ -161,8 +168,6 @@ public class RubikModel extends AbstractTableModel
             return false;
 
         }
-
-
 
     }
     @Override
