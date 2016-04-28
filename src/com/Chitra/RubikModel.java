@@ -32,7 +32,7 @@ public class RubikModel extends AbstractTableModel
         setup();
 
     }
-
+    // counts number of column basis metadata from resultSet and counts the row too
     private void setup()
     {
 
@@ -46,7 +46,7 @@ public class RubikModel extends AbstractTableModel
         }
 
     }
-
+    // counts the row basis number of elements present in the ResultSet
     private void countRows()
     {
         numberOfRows = 0;
@@ -89,6 +89,7 @@ public class RubikModel extends AbstractTableModel
         }
     }
     // deletes the row selected in GUI using predefined method called deleteRow
+    // On the resultSet
     public  boolean deleteRow(int row)
     {
         try
