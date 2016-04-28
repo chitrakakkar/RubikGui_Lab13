@@ -28,7 +28,7 @@ public class Main
 
 
     // some constants to represent the column
-    public final static String rubik_Table_Name = "Rubik_SolverR";
+    public final static String rubik_Table_Name = "Rubik_Solver4";
     public final static String Solver_Name = "Solver_Name";
     public final static String Time_Taken = "Time_Taken";
     // need a primary key to update the info in a table using a result set
@@ -75,19 +75,26 @@ public class Main
             // The result set is insensitive to changes made to the underlying data source while it is open.
             // It contains the rows that satisfy the query at either the time the query is executed or
             // as the rows are retrieved.
-             statement= conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            statement = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
             //String createTableCUBE = "CREATE TABLE  if not exists testTable (Cube_Solver varchar(30), Time_Taken double)";
-//            if (!rubikTableExists()) {
-//                String createTableRubik = "CREATE TABLE " + rubik_Table_Name + " (" + PK_COLUMN + " int NOT NULL AUTO_INCREMENT, " + Solver_Name + " varchar(100), " + Time_Taken + " Double,Primary Key(" + PK_COLUMN + "))";
-//
-                String createTableRubik = "CREATE TABLE  if not exists " + rubik_Table_Name + "(" + PK_COLUMN + " int NOT NULL AUTO_INCREMENT, " + Solver_Name + " varchar(150)," + Time_Taken + " Double, PRIMARY KEY (" + PK_COLUMN + "))";
+            if (!rubikTableExists())
+            {
+                String createTableRubik = "CREATE TABLE " + rubik_Table_Name + " (" + PK_COLUMN + " int NOT NULL AUTO_INCREMENT, " + Solver_Name + " varchar(100), " + Time_Taken + " Double,Primary Key(" + PK_COLUMN + "))";
+
+                //String createTableRubik = "CREATE TABLE  if not exists " + rubik_Table_Name + "(" + PK_COLUMN + " int NOT NULL AUTO_INCREMENT, " + Solver_Name + " varchar(150)," + Time_Taken + " Double, PRIMARY KEY (" + PK_COLUMN + "))";
                 statement.executeUpdate(createTableRubik);
-                String addDataSQL = "INSERT INTO " + rubik_Table_Name + "(" + Solver_Name + " , " + Time_Taken + ")" + " VALUES ('CubeStormer II robot', 5.270)";
+                String addDataSQL = "INSERT INTO " + rubik_Table_Name + "(" + Solver_Name + " , " + Time_Taken + ")" + " VALUES (?, ?)";
+                // using Prep Statement to insert the values into the table
                 PrepStatement = conn.prepareStatement(addDataSQL);
-                PrepStatement.executeUpdate(addDataSQL);
-                addDataSQL = "INSERT INTO " + rubik_Table_Name + "(" + Solver_Name + "," + Time_Taken + " )" + "  VALUES ('Fakhri Raihaan', 27.93)";
+                PrepStatement.setString(1,"CCubeStormer 11 Robot");
+                PrepStatement.setString(2,"5.27");
+                PrepStatement.executeUpdate();
+                addDataSQL = " INSERT INTO " + rubik_Table_Name + "(" + Solver_Name + " , " + Time_Taken + ")" + "VALUES  (?,?)";
                 PrepStatement = conn.prepareStatement(addDataSQL);
-                PrepStatement.executeUpdate(addDataSQL);
+                PrepStatement.setString(1, "Fakhri Raihaan");
+                PrepStatement.setString(2, "27.93");
+                PrepStatement.execute();
+
                 addDataSQL = "INSERT INTO " + rubik_Table_Name + "(" + Solver_Name + "," + Time_Taken + " )" + " VALUES ('Ruxin Liu', 99.33)";
                 PrepStatement = conn.prepareStatement(addDataSQL);
                 PrepStatement.executeUpdate(addDataSQL);
@@ -95,9 +102,11 @@ public class Main
                 PrepStatement = conn.prepareStatement(addDataSQL);
                 PrepStatement.executeUpdate(addDataSQL);
                 System.out.println("Added four rows of data");
-            return true;
+
 
             }
+            return true;
+        }
 
         catch (SQLException se)
         {
@@ -108,15 +117,16 @@ public class Main
 
     }
     // not using in this class
-//    private static boolean rubikTableExists() throws SQLException {
-//        String checkTablePresentQuery = " SHOW TABLES LIKE '" + rubik_Table_Name + " '";
-//        ResultSet tablesRS = statement.executeQuery(checkTablePresentQuery);
-//        if (tablesRS.next())
-//        {    //If ResultSet has a next row, it has at least one row... that must be our table
-//            return true;
-//        }
-//        return false;
-//    }
+    private static boolean rubikTableExists() throws SQLException
+    {
+        String checkTablePresentQuery = " SHOW TABLES LIKE '" + rubik_Table_Name + "'";
+        ResultSet tablesRS = statement.executeQuery(checkTablePresentQuery);
+        if (tablesRS.next())
+        {    //If ResultSet has a next row, it has at least one row... that must be our table
+            return true;
+        }
+        return false;
+    }
 
     // runs a query and assign the result to the result set
     public static boolean loadAllData()

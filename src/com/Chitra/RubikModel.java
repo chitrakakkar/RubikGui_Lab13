@@ -169,7 +169,6 @@ public class RubikModel extends AbstractTableModel
             return false;
 
         }
-
     }
     @Override
     public String getColumnName(int col){
